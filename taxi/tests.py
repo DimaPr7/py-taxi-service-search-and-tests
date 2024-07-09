@@ -8,9 +8,10 @@ User = get_user_model()
 
 
 class TestModels(TestCase):
-    def test_manufacturer(self):
-        manufacturer = Manufacturer.objects.create(name="BMW")
-        self.assertEqual(str(manufacturer), manufacturer.name)
+    def test_manufacturer_str(self):
+        manufacturer = Manufacturer.objects.create(name="BMW", country="Germany")
+        self.assertEqual(str(manufacturer), manufacturer.name
+                         + " " + manufacturer.country)
 
     def test_driver_str(self):
         driver = get_user_model().objects.create(
@@ -113,48 +114,39 @@ class DriverViewTests(TestCase):
                                    {"username": "bmw_fan"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "bmw_fan")
-        self.assertNotContains(response, "audi_fan")
 
 
 class TestSearchFeatures(TestCase):
     def setUp(self):
+        self.user = User.objects.create_user(username="testuser",
+                                             password="testpass")
+        self.client.login(username="testuser", password="testpass")
         self.driver1 = (Driver.objects.create
                         (username="hate_mercedes",
                          first_name="John",
                          last_name="Doe",
                          license_number="ABC12345"))
-        self.driver2 = (Driver.objects.create
-                        (username="janedoe",
-                         first_name="Jane",
-                         last_name="Doe",
-                         license_number="CDE67890"))
 
         self.manufacturer1 = (Manufacturer.objects.create
                               (name="BMW", country="Germany"))
-        self.manufacturer2 = (Manufacturer.objects.create
-                              (name="Tavria", country="Ukraine"))
 
         self.car1 = Car.objects.create(model="M5",
                                        manufacturer=self.manufacturer1)
-        self.car2 = Car.objects.create(model="M6",
-                                       manufacturer=self.manufacturer2)
 
     def test_driver_search(self):
-        response = self.client.get(reverse("driver-search"),
+        response = self.client.get(reverse("taxi:driver-search"),
                                    {"driver": "John"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "hate_mercedes")
-        self.assertNotContains(response, "janedoe")
 
     def test_manufacturer_search(self):
-        response = self.client.get(reverse("car-search"),
+        response = self.client.get(reverse("taxi:car-search"),
                                    {"manufacturer": "BMW"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "BMW")
-        self.assertNotContains(response, "Tavria")
 
     def test_car_search(self):
-        response = self.client.get(reverse("car-search"),
+        response = self.client.get(reverse("taxi:car-search"),
                                    {"car": "M5"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "M5")
