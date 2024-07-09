@@ -9,7 +9,8 @@ User = get_user_model()
 
 class TestModels(TestCase):
     def test_manufacturer_str(self):
-        manufacturer = Manufacturer.objects.create(name="BMW", country="Germany")
+        manufacturer = Manufacturer.objects.create(name="BMW",
+                                                   country="Germany")
         self.assertEqual(str(manufacturer), manufacturer.name
                          + " " + manufacturer.country)
 

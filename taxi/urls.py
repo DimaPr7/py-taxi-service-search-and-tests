@@ -72,7 +72,8 @@ urlpatterns = [
     ),
     path("search/drivers/", DriverListView.as_view(), name="driver-search"),
     path("search/cars/", CarListView.as_view(), name="car-search"),
-    path("search/manufacturers/", ManufacturerListView.as_view(), name="manufacturer-search"),
+    path("search/manufacturers/", ManufacturerListView.as_view(),
+         name="manufacturer-search"),
 ]
 
 app_name = "taxi"
